@@ -63,6 +63,7 @@ exports.handler = async function (event) {
     const data = await anthropicRes.json();
 
     if (!anthropicRes.ok) {
+      console.error('Anthropic API error', anthropicRes.status, JSON.stringify(data));
       return {
         statusCode: anthropicRes.status,
         headers: corsHeaders,
@@ -71,8 +72,10 @@ exports.handler = async function (event) {
     }
 
     const reply = (data.content && data.content[0] && data.content[0].text) || '';
+    console.log('Chat reply length:', reply.length);
     return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ reply }) };
   } catch (err) {
+    console.error('Function crashed:', String(err));
     return { statusCode: 500, headers: corsHeaders, body: JSON.stringify({ error: 'Failed to reach Anthropic API', detail: String(err) }) };
   }
 };
